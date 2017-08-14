@@ -2,6 +2,7 @@
 
 import sys
 import pickle
+import matplotlib.pyplot
 
 ## Uncomment below line when submitting
 #sys.path.append("../tools/")
@@ -27,18 +28,49 @@ Main features
 
 'poi'
 '''
-
+data_dict = {} ## Create an empty dict
 features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', 
-'restricted_stock_deferred', 'deferred_income', 'total_stock_value', 'expenses', 
-'exercised_stock_options', 'other', 'long_term_incentive', 'restricted_stock', 
-'director_fees', 'to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 
-'from_this_person_to_poi', 'shared_receipt_with_poi'] # You will need to use more features
+ 'deferred_income', 'total_stock_value', 'expenses', 'long_term_incentive', 'to_messages', 
+ 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
 
 ### Task 2: Remove outliers
+
+old_bons = 0
+old_name = ''
+for name in data_dict.keys():
+	bons = float(data_dict[name]['bonus'])
+	salry = float(data_dict[name]['salary'])
+	if bons > 20000000:		
+		print(name, bons)
+		data_dict.pop( name, 0 )
+	if bons > 5000000 and salry > 1000000:
+		print(name)
+		
+## Getting labels and features as numpy arrays 		
+data = featureFormat(data_dict, features_list)	
+label, features = targetFeatureSplit(data_array)
+
+
+### your code below
+#print(data_dict[1])
+for point in data:
+	print(point[10])
+	salary = point[1]
+	bonus = point[5]
+	matplotlib.pyplot.scatter( salary, bonus )
+	#print(point)
+
+matplotlib.pyplot.xlabel("salary")
+matplotlib.pyplot.ylabel("bonus")
+matplotlib.pyplot.show()
+
+
+
+'''
 ### Task 3: Create new feature(s)
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
@@ -75,3 +107,5 @@ features_train, features_test, labels_train, labels_test = \
 ### generates the necessary .pkl files for validating your results.
 
 dump_classifier_and_data(clf, my_dataset, features_list)
+
+'''

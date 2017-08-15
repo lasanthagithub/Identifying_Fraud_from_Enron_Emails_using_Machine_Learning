@@ -2,7 +2,7 @@
 
 import sys
 import pickle
-import matplotlib.pyplot
+import matplotlib.pyplot as plt
 
 ## Uncomment below line when submitting
 #sys.path.append("../tools/")
@@ -28,10 +28,11 @@ Main features
 
 'poi'
 '''
-data_dict = {} ## Create an empty dict
-features_list = ['poi','salary', 'deferral_payments', 'total_payments', 'loan_advances', 'bonus', 
- 'deferred_income', 'total_stock_value', 'expenses', 'long_term_incentive', 'to_messages', 
- 'from_poi_to_this_person', 'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
+#data_dict = {} ## Create an empty dict
+features_list = ['poi','salary', 'deferral_payments', 'total_payments', 
+'loan_advances', 'bonus',  'deferred_income', 'total_stock_value', 
+'expenses', 'long_term_incentive', 'to_messages',  'from_poi_to_this_person', 
+'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -39,36 +40,65 @@ with open("final_project_dataset.pkl", "r") as data_file:
 
 ### Task 2: Remove outliers
 
-old_bons = 0
-old_name = ''
+## This function take a specific dictionary
+## and generates boxplots
+def create_boxplot(dic):
+	plt.figure()
+	for key in dic.keys():
+		vals = dic[key]
+		plt.boxplot(vals)
+		plt.xlabel(key)
+		plt.ylabel("Values")
+		plt.show()
+	
+def remove_outliers():
+	pass
+'''	
 for name in data_dict.keys():
-	bons = float(data_dict[name]['bonus'])
-	salry = float(data_dict[name]['salary'])
-	if bons > 20000000:		
-		print(name, bons)
-		data_dict.pop( name, 0 )
-	if bons > 5000000 and salry > 1000000:
-		print(name)
-		
+	sub_dic = data_dict[name]
+	sub = ''
+	value_dic = []
+	for sub_key in sub_dic.keys():
+		if sub_key in features_list and sub_key != 'poi':
+			value_dic.append(sub_dic[sub_key])
+			sub = sub_key
+	#		print(name)
+	#		print(sub_key)
+	#print(value_list)
+'''
+	
 ## Getting labels and features as numpy arrays 		
-data = featureFormat(data_dict, features_list)	
+data_array = featureFormat(data_dict, features_list, sort_keys = False)	
 label, features = targetFeatureSplit(data_array)
-
+print(len(features))
 
 ### your code below
 #print(data_dict[1])
-for point in data:
-	print(point[10])
-	salary = point[1]
-	bonus = point[5]
-	matplotlib.pyplot.scatter( salary, bonus )
+value_dic = {}
+
+## convert the same feature values append into the fature name. give a dict 
+## Navigate through each each poi record 
+for j, point in enumerate(data_array):
+	val_list = []
+	## Navigate through each value in a record and collect similar values 
+	## to corresponding feature name. This gives a dictionary
+	for i, featu in enumerate(features_list):
+		if j == 0: ## to remove 'poi' record
+			value_dic[featu] = [point[i]]
+		else:
+			value_dic[featu] = value_dic[featu] + [point[i]]
+
+create_boxplot(value_dic)
+	
+'''
+	plt.boxplot(point)
 	#print(point)
 
-matplotlib.pyplot.xlabel("salary")
-matplotlib.pyplot.ylabel("bonus")
-matplotlib.pyplot.show()
+	plt.xlabel("salary")
+	plt.ylabel("bonus")
+plt.show()
 
-
+'''
 
 '''
 ### Task 3: Create new feature(s)

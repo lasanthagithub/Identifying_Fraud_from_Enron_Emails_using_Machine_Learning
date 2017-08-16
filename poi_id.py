@@ -56,6 +56,25 @@ def create_boxplot(dic):
 		plt.ylabel("Values")
 		plt.show()
 	
+## This function take a specific dictionary
+## and generates scatter plots with each feature with the other
+def create_scatter(dic):
+	plt.figure()
+	tempkeylst = []
+	for key1 in dic.keys():
+		for key2 in dic.keys():
+			if key1 != key2 and key2:
+		
+				val1 = dic[key1]
+				val2 = dic[key2]				
+				## Remove zeros, because most zeros were for NaNs
+				#val1 = list(filter(lambda a: a != 0.0, val1))
+				#val2 = list(filter(lambda a: a != 0.0, val2))
+				plt.scatter(val1, val2)
+				plt.xlabel(key1)
+				plt.ylabel(key2)
+				plt.show()	
+	
 ## By running following codes, I idendified 'TOTAL' is not a name of a person,
 ## and it deviates all the other values. Because 'TOTAL' values are
 ## very high compare to other values.
@@ -98,19 +117,14 @@ for j, point in enumerate(data_array):
 
 ## Uncomment the following line to see boxplots for each feature for all the persons
 #create_boxplot(value_dic)
-
+#create_scatter(value_dic)
 
 
 #############################################################################
 ### Task 3: Create new feature(s)
-
-
-
-
-
-
-
-
+from sklearn import datasets, svm
+from sklearn.cross_validation import train_test_split
+from sklearn.feature_selection import SelectPercentile, f_classif
 
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict
@@ -118,6 +132,37 @@ my_dataset = data_dict
 ### Extract features and labels from dataset for local testing
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
+
+## Split into a training and testing set
+features_train, features_test, labels_train, labels_test = \
+		train_test_split(features, labels, test_size=0.25, random_state=42)
+
+## Feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+features_train = sc.fit_transform(features_train)
+features_test = sc.transform(features_test)
+
+## Aplying PCA to feature extract
+from sklearn.decomposition import PCA
+pca = PCA(n_components = 4)
+features_train = pca.fit_transform(features_train)
+features_test = pca.transform(features_test)
+explained_variance = pca.explained_variance_ratio_
+print(explained_variance)
+
+#selector = SelectPercentile(f_classif, percentile=10)
+#selector.fit(features, features_list)
+
+#print(selector.pvalues_)
+
+
+
+
+
+
+
+
 
 
 '''

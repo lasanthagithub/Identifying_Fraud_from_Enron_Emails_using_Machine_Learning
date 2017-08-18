@@ -42,6 +42,7 @@ features_list = ['poi','salary', 'total_payments', 'loan_advances', 'bonus',
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
     data_dict = pickle.load(data_file)
+
 #############################################################################
 ### Task 2: Remove outliers
 
@@ -82,47 +83,71 @@ def create_scatter(dic):
 ## and it deviates all the other values. Because 'TOTAL' values are
 ## very high compare to other values.
 
+## Please cnange False to True in the folowing block if needed to see the values of 'TOTAL'			
+	
+## To identify mismattching items in the data_dic	
+if False:
+	nan_count = 0	
+	nan_count1 = 0	
+	for name in data_dict.keys():
+		bons = float(data_dict[name]['bonus'])
+		salry = float(data_dict[name]['salary'])
+		if bons > 20000000:		
+			print(name, bons)
+			data_dict.pop( name, 0 )
+		if bons > 5000000 and salry > 1000000:
+			print(name)
+		if name != 'TOTAL':
+			if data_dict[name]['salary'] == 'NaN':
+				nan_count += 1
+			if data_dict[name]['bonus'] == 'NaN':
+				nan_count1 += 1		
 
-## Please uncomment foloowing block if needed to see the values of 'TOTAL'			
-'''	
-## To identify mismattching items in the data_dic			
-for name in data_dict.keys():
-	bons = float(data_dict[name]['bonus'])
-	salry = float(data_dict[name]['salary'])
-	if bons > 20000000:		
-		print(name, bons)
-		data_dict.pop( name, 0 )
-	if bons > 5000000 and salry > 1000000:
-		print(name)				
-'''				
+	print('nan count salary', nan_count)	
+	print('nan count bonus', nan_count1)
+
+
 ## Therefore, TOTAL need to be removed	
 data_dict.pop('TOTAL', None)
 	
-## Getting labels and features as numpy arrays 		
-data_array = featureFormat(data_dict, features_list, sort_keys = False)	
 
-### your code below
-#print(data_dict[1])
-value_dic = {}
+## Please cnange False to True to see the boxplots, scatter plots and number of NaN values
 
-## convert the same feature values append into the fature name. give a dict 
-## Navigate through each each poi record 
-for j, point in enumerate(data_array):
-	val_list = []
-	## Navigate through each value in a record and collect similar values 
-	## to corresponding feature name. This gives a dictionary
-	for i, featu in enumerate(features_list):
-		if featu != 'poi': ## to remove 'poi' record
-			if j == 0: ## Add the first value
-				value_dic[featu] = [point[i]]
-			else: ## Append after the value
-				value_dic[featu] = value_dic[featu] + [point[i]]
+if True:
+	## Getting labels and features as numpy arrays 		
+	data_array = featureFormat(data_dict, features_list, sort_keys = False)	
+	print('Size of the dataset before,'+ str(len(data_dict))+' and, after, ' \
+		+str(len(data_array)) +',running featureFormat function' )
+	value_dic = {}
+	## convert the same feature values append into the fature name. give a dict 
+	## Navigate through each each poi record 
+	for j, point in enumerate(data_array):
+		val_list = []
+		## Navigate through each value in a record and collect similar values 
+		## to corresponding feature name. This gives a dictionary
+		for i, featu in enumerate(features_list):
+			if featu != 'poiii': ## to remove 'poi' record
+				if j == 0: ## Add the first value
+					value_dic[featu] = [point[i]]
+				else: ## Append after the value
+					value_dic[featu] = value_dic[featu] + [point[i]]
 
-## Uncomment the following line to see boxplots for each feature for all the persons
-#create_boxplot(value_dic)
-#create_scatter(value_dic)
+	print('Number of miising values')
+	for j, point in enumerate(value_dic):
+		z_count = value_dic[point].count(0)		
+		if z_count > 0:
+			print(point, z_count)
+			
+	print('Poi stats')
+	print('number of poi:', value_dic['poi'].count(1))
+	print('number of nonpoi:', value_dic['poi'].count(0))
+	print('total persons:', len(value_dic['poi']))
+		
+	## Uncomment the following line to see plots for each feature for all the persons
+	#create_boxplot(value_dic)
+	#create_scatter(value_dic)
 
-
+'''
 #############################################################################
 ### Task 3: Create new feature(s)
 from sklearn import datasets, svm
@@ -142,7 +167,7 @@ labels, features = targetFeatureSplit(data)
 features_train, features_test, labels_train, labels_test = \
 		train_test_split(features, labels, test_size=0.25, random_state=42)
 
-print(features_train)
+
 		
 ## Feature Scaling
 from sklearn.preprocessing import StandardScaler
@@ -150,7 +175,7 @@ sc = StandardScaler()
 features_train = sc.fit_transform(features_train)
 features_test = sc.transform(features_test)
 
-print(features_train)
+
 
 ## Aplying PCA to feature extract
 from sklearn.decomposition import PCA
@@ -168,7 +193,7 @@ explained_variance = pca.explained_variance_ratio_
 
 
 
-
+'''
 
 
 

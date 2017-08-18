@@ -27,14 +27,17 @@ Main features
 'to_messages', 'email_address', 'from_poi_to_this_person', 'from_messages', 
 'from_this_person_to_poi', 'shared_receipt_with_poi'
 
-'poi'
+'poi '
+
+
+expences = deferral_payments. expenses director_fees, total_payments'
+income = salary, bonus, loan_advances, differed_income, 
 '''
 #############################################################################
 #data_dict = {} ## Create an empty dict
-features_list = ['poi','salary', 'deferral_payments', 'total_payments', 
-'loan_advances', 'bonus',  'deferred_income', 'total_stock_value', 
-'expenses', 'long_term_incentive', 'to_messages',  'from_poi_to_this_person', 
-'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
+features_list = ['poi','salary', 'total_payments', 'loan_advances', 'bonus',   
+		'deferred_income', 'expenses', 'to_messages', 'from_poi_to_this_person', 
+		'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
 
 ### Load the dictionary containing the dataset
 with open("final_project_dataset.pkl", "r") as data_file:
@@ -133,15 +136,21 @@ my_dataset = data_dict
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
+
+
 ## Split into a training and testing set
 features_train, features_test, labels_train, labels_test = \
 		train_test_split(features, labels, test_size=0.25, random_state=42)
 
+print(features_train)
+		
 ## Feature Scaling
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
 features_train = sc.fit_transform(features_train)
 features_test = sc.transform(features_test)
+
+print(features_train)
 
 ## Aplying PCA to feature extract
 from sklearn.decomposition import PCA
@@ -149,8 +158,9 @@ pca = PCA(n_components = 4)
 features_train = pca.fit_transform(features_train)
 features_test = pca.transform(features_test)
 explained_variance = pca.explained_variance_ratio_
-print(explained_variance)
+#print(explained_variance)
 
+#print(features_train)
 #selector = SelectPercentile(f_classif, percentile=10)
 #selector.fit(features, features_list)
 

@@ -35,7 +35,7 @@ income = salary, bonus, loan_advances, differed_income,
 '''
 #############################################################################
 #data_dict = {} ## Create an empty dict
-features_list = ['poi','salary', 'total_payments', 'loan_advances', 'bonus',   
+features_list = ['poi','salary', 'total_payments', 'bonus',   
 		'deferred_income', 'expenses', 'to_messages', 'from_poi_to_this_person', 
 		'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
 
@@ -113,7 +113,7 @@ data_dict.pop('TOTAL', None)
 
 ## Please cnange False to True to see the boxplots, scatter plots and number of NaN values
 
-if True:
+if False:
 	## Getting labels and features as numpy arrays 		
 	data_array = featureFormat(data_dict, features_list, sort_keys = False)	
 	print('Size of the dataset before,'+ str(len(data_dict))+' and, after, ' \
@@ -147,9 +147,34 @@ if True:
 	#create_boxplot(value_dic)
 	#create_scatter(value_dic)
 
-'''
+
 #############################################################################
 ### Task 3: Create new feature(s)
+## Creating a new features to standadize the from_this_person_to_poi and 
+## from_poi_to_this_person by dividing corresponding total emails
+		
+if True:
+	for name in data_dict.keys():
+		to_poi = data_dict[name]['from_this_person_to_poi']
+		from_poi = data_dict[name]['from_poi_to_this_person']
+		to_msg = data_dict[name]['to_messages']
+		from_msg = data_dict[name]['from_messages']		
+		
+		## New standardized features
+		if to_poi != 'NaN' or from_msg != 'NaN':
+			data_dict[name]['std_from_this_person_to_poi'] = float(to_poi)/float(from_msg)
+		else:
+			data_dict[name]['std_from_this_person_to_poi'] = 'NaN'
+		if from_poi != 'NaN' or to_msg != 'NaN':		
+			data_dict[name]['std_from_poi_to_this_person'] = float(from_poi)/float(to_msg)
+		else:
+			data_dict[name]['std_from_poi_to_this_person'] = 'NaN'
+
+## New feature list	
+features_list = ['poi', 'salary', 'total_payments', 'bonus',   
+		'deferred_income', 'expenses',  'shared_receipt_with_poi',
+		'std_from_this_person_to_poi', 'std_from_poi_to_this_person']
+
 from sklearn import datasets, svm
 from sklearn.cross_validation import train_test_split
 from sklearn.feature_selection import SelectPercentile, f_classif
@@ -161,13 +186,9 @@ my_dataset = data_dict
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
 
-
-
 ## Split into a training and testing set
 features_train, features_test, labels_train, labels_test = \
 		train_test_split(features, labels, test_size=0.25, random_state=42)
-
-
 		
 ## Feature Scaling
 from sklearn.preprocessing import StandardScaler
@@ -175,7 +196,7 @@ sc = StandardScaler()
 features_train = sc.fit_transform(features_train)
 features_test = sc.transform(features_test)
 
-
+'''
 
 ## Aplying PCA to feature extract
 from sklearn.decomposition import PCA

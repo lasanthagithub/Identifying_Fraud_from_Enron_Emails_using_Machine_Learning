@@ -206,7 +206,7 @@ print(model.feature_importances_)
 
 
 
-'''
+
 
 ## Aplying PCA to feature extract
 from sklearn.decomposition import PCA
@@ -214,15 +214,15 @@ pca = PCA(n_components = 4)
 features_train = pca.fit_transform(features_train)
 features_test = pca.transform(features_test)
 explained_variance = pca.explained_variance_ratio_
-#print(explained_variance)
+print(explained_variance)
 
 #print(features_train)
-#selector = SelectPercentile(f_classif, percentile=10)
-#selector.fit(features, features_list)
+selector = SelectPercentile(f_classif, percentile=10)
+selector.fit(features_train, labels_train)
 
-#print(selector.pvalues_)
+print(selector.pvalues_)
 
-
+'''
 
 '''
 

@@ -170,7 +170,7 @@ if True:
 		else:
 			data_dict[name]['std_from_poi_to_this_person'] = 'NaN'
 
-## New feature list	
+## New feature list before finfing relative importance	
 features_list = ['poi', 'salary', 'total_payments', 'bonus',   
 		'deferred_income', 'expenses',  'shared_receipt_with_poi',
 		'std_from_this_person_to_poi', 'std_from_poi_to_this_person']
@@ -204,10 +204,21 @@ model = ExtraTreesClassifier()
 model.fit(features_train, labels_train)
 print(model.feature_importances_)
 
-
-
+'''
+from sklearn.feature_selection import RFE
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+rfe = RFE(model, 5)
+fit = rfe.fit(features_train, labels_train)
+print("Num Features: %d") % fit.n_features_
+print("Selected Features: %s") % fit.support_
+print("Feature Ranking: %s") % fit.ranking_
+index_lst = [i for i, itm in enumerate(fit.ranking_) if itm == 1]
+print(index_lst)
+print("Feature names: %s") % map(features_list[1: ].__getitem__, index_lst)
 '''
 
+'''
 ## Aplying PCA to feature extract
 from sklearn.decomposition import PCA
 pca = PCA(n_components = 4)
@@ -219,19 +230,18 @@ print(explained_variance)
 #print(features_train)
 selector = SelectPercentile(f_classif, percentile=10)
 selector.fit(features_train, labels_train)
-
 print(selector.pvalues_)
-
-
-
 '''
 
+## Final feature list	
+features_list = ['poi', 'salary', 'total_payments', 'bonus',   
+		'deferred_income', 'expenses', 'std_from_this_person_to_poi']
 
 
 
 
 
-'''
+
 #############################################################################
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
@@ -243,6 +253,12 @@ print(selector.pvalues_)
 from sklearn.naive_bayes import GaussianNB
 clf = GaussianNB()
 
+
+
+
+
+
+'''
 #############################################################################
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project

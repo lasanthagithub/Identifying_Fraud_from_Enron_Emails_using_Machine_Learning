@@ -193,8 +193,8 @@ features_train, features_test, labels_train, labels_test = \
 ## Feature Scaling
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
-#features_train = sc.fit_transform(features_train)
-#features_test = sc.transform(features_test)
+features_train = sc.fit_transform(features_train)
+features_test = sc.transform(features_test)
 
 
 ## Feature selection 
@@ -206,7 +206,7 @@ print(model.feature_importances_)
 
 
 
-
+'''
 
 ## Aplying PCA to feature extract
 from sklearn.decomposition import PCA
@@ -222,7 +222,7 @@ selector.fit(features_train, labels_train)
 
 print(selector.pvalues_)
 
-'''
+
 
 '''
 

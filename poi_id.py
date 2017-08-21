@@ -170,68 +170,71 @@ if True:
 		else:
 			data_dict[name]['std_from_poi_to_this_person'] = 'NaN'
 
-## New feature list before finfing relative importance	
-features_list = ['poi', 'salary', 'total_payments', 'bonus',   
-		'deferred_income', 'expenses',  'shared_receipt_with_poi',
-		'std_from_this_person_to_poi', 'std_from_poi_to_this_person']
-
-from sklearn import datasets, svm
-from sklearn.cross_validation import train_test_split
-from sklearn.feature_selection import SelectPercentile, f_classif
-
 ### Store to my_dataset for easy export below.
-my_dataset = data_dict
-
-### Extract features and labels from dataset for local testing
-data = featureFormat(my_dataset, features_list, sort_keys = True)
-labels, features = targetFeatureSplit(data)
-
-## Split into a training and testing set
-features_train, features_test, labels_train, labels_test = \
-		train_test_split(features, labels, test_size=0.25, random_state=42)
+my_dataset = data_dict	
 		
-## Feature Scaling
-from sklearn.preprocessing import StandardScaler
-sc = StandardScaler()
-features_train = sc.fit_transform(features_train)
-features_test = sc.transform(features_test)
+if False:			
+	## New feature list before finfing relative importance	
+	features_list = ['poi', 'salary', 'total_payments', 'bonus',   
+			'deferred_income', 'expenses',  'shared_receipt_with_poi',
+			'std_from_this_person_to_poi', 'std_from_poi_to_this_person']
+
+	from sklearn import datasets, svm
+	from sklearn.cross_validation import train_test_split
+	from sklearn.feature_selection import SelectPercentile, f_classif
 
 
-## Feature selection 
-# feature extraction
-from sklearn.ensemble import ExtraTreesClassifier
-model = ExtraTreesClassifier()
-model.fit(features_train, labels_train)
-print(model.feature_importances_)
 
-'''
-from sklearn.feature_selection import RFE
-from sklearn.linear_model import LogisticRegression
-model = LogisticRegression()
-rfe = RFE(model, 5)
-fit = rfe.fit(features_train, labels_train)
-print("Num Features: %d") % fit.n_features_
-print("Selected Features: %s") % fit.support_
-print("Feature Ranking: %s") % fit.ranking_
-index_lst = [i for i, itm in enumerate(fit.ranking_) if itm == 1]
-print(index_lst)
-print("Feature names: %s") % map(features_list[1: ].__getitem__, index_lst)
-'''
+	### Extract features and labels from dataset for local testing
+	data = featureFormat(my_dataset, features_list, sort_keys = True)
+	labels, features = targetFeatureSplit(data)
 
-'''
-## Aplying PCA to feature extract
-from sklearn.decomposition import PCA
-pca = PCA(n_components = 4)
-features_train = pca.fit_transform(features_train)
-features_test = pca.transform(features_test)
-explained_variance = pca.explained_variance_ratio_
-print(explained_variance)
+	## Split into a training and testing set
+	features_train, features_test, labels_train, labels_test = \
+			train_test_split(features, labels, test_size=0.25, random_state=42)
+			
+	## Feature Scaling
+	from sklearn.preprocessing import StandardScaler
+	sc = StandardScaler()
+	features_train = sc.fit_transform(features_train)
+	features_test = sc.transform(features_test)
 
-#print(features_train)
-selector = SelectPercentile(f_classif, percentile=10)
-selector.fit(features_train, labels_train)
-print(selector.pvalues_)
-'''
+
+	## Feature selection 
+	# feature extraction
+	from sklearn.ensemble import ExtraTreesClassifier
+	model = ExtraTreesClassifier()
+	model.fit(features_train, labels_train)
+	print(model.feature_importances_)
+
+	'''
+	from sklearn.feature_selection import RFE
+	from sklearn.linear_model import LogisticRegression
+	model = LogisticRegression()
+	rfe = RFE(model, 5)
+	fit = rfe.fit(features_train, labels_train)
+	print("Num Features: %d") % fit.n_features_
+	print("Selected Features: %s") % fit.support_
+	print("Feature Ranking: %s") % fit.ranking_
+	index_lst = [i for i, itm in enumerate(fit.ranking_) if itm == 1]
+	print(index_lst)
+	print("Feature names: %s") % map(features_list[1: ].__getitem__, index_lst)
+	'''
+
+	'''
+	## Aplying PCA to feature extract
+	from sklearn.decomposition import PCA
+	pca = PCA(n_components = 4)
+	features_train = pca.fit_transform(features_train)
+	features_test = pca.transform(features_test)
+	explained_variance = pca.explained_variance_ratio_
+	print(explained_variance)
+
+	#print(features_train)
+	selector = SelectPercentile(f_classif, percentile=10)
+	selector.fit(features_train, labels_train)
+	print(selector.pvalues_)
+	'''
 
 ## Final feature list	
 features_list = ['poi', 'salary', 'total_payments', 'bonus',   
@@ -253,11 +256,30 @@ features_list = ['poi', 'salary', 'total_payments', 'bonus',
 from sklearn.naive_bayes import GaussianNB
 clf = GaussianNB()
 
+### Extract features and labels from dataset for algorithem selection
+data = featureFormat(my_dataset, features_list, sort_keys = True)
+labels, features = targetFeatureSplit(data)
 
+## Split into a training and testing set
+from sklearn.cross_validation import train_test_split
+features_train, features_test, labels_train, labels_test = \
+		train_test_split(features, labels, test_size=0.25, random_state=42)
 
+# Fitting Logistic Regression to the Training set
+from sklearn.linear_model import LogisticRegression
+clf = LogisticRegression(random_state = 0)
+clf.fit(features_train, labels_train)
 
+# Predicting the Test set results
+labels_pred = clf.predict(features_test)
 
+print(labels_pred)
 
+# Making the Confusion Matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(labels_test, labels_pred)
+
+print(cm)
 '''
 #############################################################################
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 

@@ -268,7 +268,29 @@ sc = StandardScaler()
 features_train = sc.fit_transform(features_train)
 features_test = sc.transform(features_test)
 
-if False:
+if True:
+	## Naive Bayes to the Training set
+	from sklearn.naive_bayes import GaussianNB
+	clf = GaussianNB()
+	#clf = SVC(kernel="rbf", C = 10000.0) ## rbf -Gaussian kernal
+	clf.fit(features_train, labels_train)
+	
+	## Predicting the Test set results
+	labels_pred = clf.predict(features_test)
+	
+	## Making the Confusion Matrix to check the performance
+	from sklearn.metrics import confusion_matrix, accuracy_score
+	cm = confusion_matrix(labels_test, labels_pred)
+	acc = accuracy_score(labels_pred, labels_test)
+	print('Naive Bayes')
+	print('Confusion matrix')
+	print(cm)
+	print('Accuracy score', acc)
+
+
+
+
+if True:
 	## Logistic Regression to the Training set
 	from sklearn.linear_model import LogisticRegression
 	clf = LogisticRegression(random_state = 0)
@@ -278,23 +300,32 @@ if False:
 	labels_pred = clf.predict(features_test)
 	
 	## Making the Confusion Matrix to check the performance
-	from sklearn.metrics import confusion_matrix
+	from sklearn.metrics import confusion_matrix, accuracy_score
 	cm = confusion_matrix(labels_test, labels_pred)
+	acc = accuracy_score(labels_pred, labels_test)
+	print('Logistic Regression')
+	print('Confusion matrix')
 	print(cm)
+	print('Accuracy score', acc)
 
 if True:
 	## SVM to the Training set
 	from sklearn.svm import SVC
-	clf = SVC(kernel = 'linear', random_state = 0)
+	clf = SVC(kernel = 'linear', C = 10000.0)
+	#clf = SVC(kernel="rbf", C = 10000.0) ## rbf -Gaussian kernal
 	clf.fit(features_train, labels_train)
 	
 	## Predicting the Test set results
 	labels_pred = clf.predict(features_test)
 	
 	## Making the Confusion Matrix to check the performance
-	from sklearn.metrics import confusion_matrix
+	from sklearn.metrics import confusion_matrix, accuracy_score
 	cm = confusion_matrix(labels_test, labels_pred)
+	acc = accuracy_score(labels_pred, labels_test)
+	print('SVM')
+	print('Confusion matrix')
 	print(cm)
+	print('Accuracy score', acc)
 
 
 '''

@@ -3,6 +3,7 @@
 import sys
 import pickle
 import matplotlib.pyplot as plt
+import numpy as np
 
 ## Uncomment below line when submitting
 #sys.path.append("../tools/")
@@ -40,7 +41,7 @@ features_list = ['poi','salary', 'total_payments', 'bonus',
 		'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
 
 ### Load the dictionary containing the dataset
-with open("final_project_dataset.pkl", "r") as data_file:
+with open("final_project_dataset.pkl", "rb") as data_file:
     data_dict = pickle.load(data_file)
 
 #############################################################################
@@ -252,10 +253,6 @@ features_list = ['poi', 'salary', 'total_payments', 'bonus',
 ### you'll need to use Pipelines. For more info:
 ### http://scikit-learn.org/stable/modules/pipeline.html
 
-# Provided to give you a starting point. Try a variety of classifiers.
-from sklearn.naive_bayes import GaussianNB
-clf = GaussianNB()
-
 ### Extract features and labels from dataset for algorithem selection
 data = featureFormat(my_dataset, features_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
@@ -264,22 +261,42 @@ labels, features = targetFeatureSplit(data)
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
 		train_test_split(features, labels, test_size=0.25, random_state=42)
+		
+## Feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+features_train = sc.fit_transform(features_train)
+features_test = sc.transform(features_test)
 
-# Fitting Logistic Regression to the Training set
-from sklearn.linear_model import LogisticRegression
-clf = LogisticRegression(random_state = 0)
-clf.fit(features_train, labels_train)
+if False:
+	## Logistic Regression to the Training set
+	from sklearn.linear_model import LogisticRegression
+	clf = LogisticRegression(random_state = 0)
+	clf.fit(features_train, labels_train)
+	
+	## Predicting the Test set results
+	labels_pred = clf.predict(features_test)
+	
+	## Making the Confusion Matrix to check the performance
+	from sklearn.metrics import confusion_matrix
+	cm = confusion_matrix(labels_test, labels_pred)
+	print(cm)
 
-# Predicting the Test set results
-labels_pred = clf.predict(features_test)
+if True:
+	## SVM to the Training set
+	from sklearn.svm import SVC
+	clf = SVC(kernel = 'linear', random_state = 0)
+	clf.fit(features_train, labels_train)
+	
+	## Predicting the Test set results
+	labels_pred = clf.predict(features_test)
+	
+	## Making the Confusion Matrix to check the performance
+	from sklearn.metrics import confusion_matrix
+	cm = confusion_matrix(labels_test, labels_pred)
+	print(cm)
 
-print(labels_pred)
 
-# Making the Confusion Matrix
-from sklearn.metrics import confusion_matrix
-cm = confusion_matrix(labels_test, labels_pred)
-
-print(cm)
 '''
 #############################################################################
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 

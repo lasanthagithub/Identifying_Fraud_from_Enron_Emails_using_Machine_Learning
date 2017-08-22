@@ -268,64 +268,55 @@ sc = StandardScaler()
 features_train = sc.fit_transform(features_train)
 features_test = sc.transform(features_test)
 
+## Making the Confusion Matrix to check the performance
+from sklearn.metrics import confusion_matrix, accuracy_score
+
+## This function pront out the accuracy of the algorithms 
+def accuracy_check(classf, features_train, labels_train, method, labels_test,\
+				   change = 'Default values'):
+	## Fit data to classyfier
+	classf.fit(features_train, labels_train)
+	
+	## Predicting the Test set results
+	labels_pred = classf.predict(features_test)
+	cm = confusion_matrix(labels_test, labels_pred)
+	acc = accuracy_score(labels_test, labels_pred)
+	print(method)
+	print('Change made', change)
+	print('Confusion matrix')
+	print(cm)
+	print('Accuracy score', acc)
+
+
+## Checking diffrent algorithms
 if True:
 	## Naive Bayes to the Training set
 	from sklearn.naive_bayes import GaussianNB
 	clf = GaussianNB()
-	#clf = SVC(kernel="rbf", C = 10000.0) ## rbf -Gaussian kernal
-	clf.fit(features_train, labels_train)
+	accuracy_check(clf, features_train, labels_train, 'Naive Bayes',\
+				 labels_test, change = 'Default values')
 	
-	## Predicting the Test set results
-	labels_pred = clf.predict(features_test)
-	
-	## Making the Confusion Matrix to check the performance
-	from sklearn.metrics import confusion_matrix, accuracy_score
-	cm = confusion_matrix(labels_test, labels_pred)
-	acc = accuracy_score(labels_pred, labels_test)
-	print('Naive Bayes')
-	print('Confusion matrix')
-	print(cm)
-	print('Accuracy score', acc)
-
-
-
-
 if True:
 	## Logistic Regression to the Training set
 	from sklearn.linear_model import LogisticRegression
 	clf = LogisticRegression(random_state = 0)
-	clf.fit(features_train, labels_train)
-	
-	## Predicting the Test set results
-	labels_pred = clf.predict(features_test)
-	
-	## Making the Confusion Matrix to check the performance
-	from sklearn.metrics import confusion_matrix, accuracy_score
-	cm = confusion_matrix(labels_test, labels_pred)
-	acc = accuracy_score(labels_pred, labels_test)
-	print('Logistic Regression')
-	print('Confusion matrix')
-	print(cm)
-	print('Accuracy score', acc)
-
+	accuracy_check(clf, features_train, labels_train, 'Logistic Regression',\
+				 labels_test, change = 'Default values')
 if True:
 	## SVM to the Training set
 	from sklearn.svm import SVC
 	clf = SVC(kernel = 'linear', C = 10000.0)
 	#clf = SVC(kernel="rbf", C = 10000.0) ## rbf -Gaussian kernal
-	clf.fit(features_train, labels_train)
-	
-	## Predicting the Test set results
-	labels_pred = clf.predict(features_test)
-	
-	## Making the Confusion Matrix to check the performance
-	from sklearn.metrics import confusion_matrix, accuracy_score
-	cm = confusion_matrix(labels_test, labels_pred)
-	acc = accuracy_score(labels_pred, labels_test)
-	print('SVM')
-	print('Confusion matrix')
-	print(cm)
-	print('Accuracy score', acc)
+	accuracy_check(clf, features_train, labels_train, 'SVM',\
+				 labels_test, change = 'Default values')
+
+
+if True:
+	## Random forest to the Training set
+	from sklearn.ensemble import RandomForestClassifier
+	clf = RandomForestClassifier(n_estimators = 10, criterion = 'entropy')
+	accuracy_check(clf, features_train, labels_train, 'Random forest',\
+				 labels_test, change = 'Default values')
 
 
 '''

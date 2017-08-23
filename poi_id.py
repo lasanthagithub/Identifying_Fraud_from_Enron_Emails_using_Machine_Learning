@@ -87,7 +87,7 @@ def create_scatter(dic):
 ## Please cnange False to True in the folowing block if needed to see the values of 'TOTAL'			
 	
 ## To identify mismattching items in the data_dic	
-if False:
+if True:
 	nan_count = 0	
 	nan_count1 = 0	
 	for name in data_dict.keys():

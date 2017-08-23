@@ -260,7 +260,7 @@ labels, features = targetFeatureSplit(data)
 ## Split into a training and testing set
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
-		train_test_split(features, labels, test_size=0.25, random_state=42)
+		train_test_split(features, labels, test_size=0.3, random_state=42)
 		
 ## Feature Scaling
 from sklearn.preprocessing import StandardScaler
@@ -279,10 +279,10 @@ def accuracy_check(classf, features_train, labels_train, method, labels_test,\
 	
 	## Predicting the Test set results
 	labels_pred = classf.predict(features_test)
-	cm = confusion_matrix(labels_test, labels_pred)
+	cm = confusion_matrix(labels_test, labels_pred, labels = [0,1])
 	acc = accuracy_score(labels_test, labels_pred)
 	print(method)
-	print('Change made', change)
+	print('Change made:', change)
 	print('Confusion matrix')
 	print(cm)
 	print('Accuracy score', acc)
@@ -299,27 +299,47 @@ if True:
 if True:
 	## Logistic Regression to the Training set
 	from sklearn.linear_model import LogisticRegression
-	clf = LogisticRegression(random_state = 0)
+	clf = LogisticRegression()
 	accuracy_check(clf, features_train, labels_train, 'Logistic Regression',\
-				 labels_test, change = 'Default values')
+				 labels_test, change = 'Default values: C = 1.0')
+	clf = LogisticRegression(C = 2.0)
+	accuracy_check(clf, features_train, labels_train, 'Logistic Regression',\
+				 labels_test, change = 'C = 2.0')	
+	clf = LogisticRegression(C = 0.5)
+	accuracy_check(clf, features_train, labels_train, 'Logistic Regression',\
+				 labels_test, change = 'C = 0.5')	
+	print()
+	
 if True:
 	## SVM to the Training set
 	from sklearn.svm import SVC
-	clf = SVC(kernel = 'linear', C = 10000.0)
+	clf = SVC(kernel = 'linear', C = 1.0)
 	#clf = SVC(kernel="rbf", C = 10000.0) ## rbf -Gaussian kernal
 	accuracy_check(clf, features_train, labels_train, 'SVM',\
-				 labels_test, change = 'Default values')
-
-
+				 labels_test, change = 'linear, C = 1.0')
+	clf = SVC(kernel="linear", C = 0.5) ## rbf -Gaussian kernal
+	accuracy_check(clf, features_train, labels_train, 'SVM',\
+				 labels_test, change = 'linear, C = 0.5')	
+	clf = SVC(kernel="rbf", C = 1.0) ## rbf -Gaussian kernal
+	accuracy_check(clf, features_train, labels_train, 'SVM',\
+				 labels_test, change = 'rbf, C = 1.0')	
+	print()
+	
 if True:
 	## Random forest to the Training set
 	from sklearn.ensemble import RandomForestClassifier
 	clf = RandomForestClassifier(n_estimators = 10, criterion = 'entropy')
 	accuracy_check(clf, features_train, labels_train, 'Random forest',\
-				 labels_test, change = 'Default values')
+				 labels_test, change = 'Default values: n_estimators = 10')
+	clf = RandomForestClassifier(n_estimators = 20, criterion = 'entropy')
+	accuracy_check(clf, features_train, labels_train, 'Random forest',\
+				 labels_test, change = 'n_estimators = 20')
+	clf = RandomForestClassifier(n_estimators = 5, criterion = 'entropy')
+	accuracy_check(clf, features_train, labels_train, 'Random forest',\
+				 labels_test, change = 'n_estimators = 5')
+	print()
 
 
-'''
 #############################################################################
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall 
 ### using our testing script. Check the tester.py script in the final project
@@ -329,9 +349,18 @@ if True:
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
+
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
     train_test_split(features, labels, test_size=0.3, random_state=42)
+
+print('Final analysis using Random forest algorithm.............')
+## Random forest to the Training set
+from sklearn.ensemble import RandomForestClassifier
+clf = RandomForestClassifier(n_estimators = 10, criterion = 'entropy')
+accuracy_check(clf, features_train, labels_train, 'Random forest',\
+				 labels_test, change = 'Default values: n_estimators = 10')
+
 
 #############################################################################	
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
@@ -341,4 +370,3 @@ features_train, features_test, labels_train, labels_test = \
 
 dump_classifier_and_data(clf, my_dataset, features_list)
 
-'''

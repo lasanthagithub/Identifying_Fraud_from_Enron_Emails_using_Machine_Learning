@@ -14,6 +14,10 @@ import pickle
 import sys
 from sklearn.cross_validation import StratifiedShuffleSplit
 sys.path.append("../tools/")
+## Uncomment below line when submitting
+#sys.path.append("../tools/")
+## Cooment out below line when submitting
+sys.path.append("..\\Intro-to-Mchine_learning\\ud120-projects-master_2\\tools")
 from feature_format import featureFormat, targetFeatureSplit
 
 PERF_FORMAT_STRING = "\

@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ## Uncomment below line when submitting
-sys.path.append("../tools/")
+#sys.path.append("../tools/")
 ## Cooment out below line when submitting
-#sys.path.append("..\\Intro-to-Mchine_learning\\ud120-projects-master_2\\tools")
+sys.path.append("..\\Intro-to-Mchine_learning\\ud120-projects-master_2\\tools")
 
 from feature_format import featureFormat, targetFeatureSplit
 from tester import dump_classifier_and_data

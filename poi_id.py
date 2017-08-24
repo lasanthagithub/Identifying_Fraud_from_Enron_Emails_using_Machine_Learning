@@ -87,7 +87,7 @@ def create_scatter(dic):
 ## Please cnange False to True in the folowing block if needed to see the values of 'TOTAL'			
 	
 ## To identify mismattching items in the data_dic	
-if True:
+if False:
 	nan_count = 0	
 	nan_count1 = 0	
 	for name in data_dict.keys():
@@ -103,14 +103,21 @@ if True:
 				nan_count += 1
 			if data_dict[name]['bonus'] == 'NaN':
 				nan_count1 += 1		
-
+		if name == 'LOCKHART EUGENE E' or \
+			name == 'TRAVEL AGENCY IN THE PARK':
+			print(name)
 	print('nan count salary', nan_count)	
 	print('nan count bonus', nan_count1)
 
-
+if True:
+	
+	if 'TRAVEL AGENCY IN THE PARK' in data_dict.keys():
+		print(data_dict['TRAVEL AGENCY IN THE PARK'])
+	else:
+		print('TRAVEL AGENCY IN THE PARK is not found')
 ## Therefore, TOTAL need to be removed	
 data_dict.pop('TOTAL', None)
-	
+
 
 ## Please cnange False to True to see the boxplots, scatter plots and number of NaN values
 
@@ -175,7 +182,7 @@ if True:
 my_dataset = data_dict	
 		
 if False:			
-	## New feature list before finfing relative importance	
+	## New feature list before finding relative importance	
 	features_list = ['poi', 'salary', 'total_payments', 'bonus',   
 			'deferred_income', 'expenses',  'shared_receipt_with_poi',
 			'std_from_this_person_to_poi', 'std_from_poi_to_this_person']
@@ -236,12 +243,19 @@ if False:
 	selector.fit(features_train, labels_train)
 	print(selector.pvalues_)
 	'''
+	
+## Calculate precision and recall values with newly created features
+from sklearn.metrics import recall_score, precision_score
 
+precision = precision_score(y_true, y_pred, average='micro')
+recall = recall_score(y_true, y_pred, average='micro')
+
+'''
 ## Final feature list	
 features_list = ['poi', 'salary', 'total_payments', 'bonus',   
 		'deferred_income', 'expenses', 'std_from_this_person_to_poi']
 
-
+'''
 
 
 
@@ -289,14 +303,14 @@ def accuracy_check(classf, features_train, labels_train, method, labels_test,\
 
 
 ## Checking diffrent algorithms
-if True:
+if False:
 	## Naive Bayes to the Training set
 	from sklearn.naive_bayes import GaussianNB
 	clf = GaussianNB()
 	accuracy_check(clf, features_train, labels_train, 'Naive Bayes',\
 				 labels_test, change = 'Default values')
 	
-if True:
+if False:
 	## Logistic Regression to the Training set
 	from sklearn.linear_model import LogisticRegression
 	clf = LogisticRegression()
@@ -310,7 +324,7 @@ if True:
 				 labels_test, change = 'C = 0.5')	
 	print()
 	
-if True:
+if False:
 	## SVM to the Training set
 	from sklearn.svm import SVC
 	clf = SVC(kernel = 'linear', C = 1.0)
@@ -325,7 +339,7 @@ if True:
 				 labels_test, change = 'rbf, C = 1.0')	
 	print()
 	
-if True:
+if False:
 	## Random forest to the Training set
 	from sklearn.ensemble import RandomForestClassifier
 	clf = RandomForestClassifier(n_estimators = 10, criterion = 'entropy')
@@ -368,5 +382,5 @@ accuracy_check(clf, features_train, labels_train, 'Random forest',\
 ### that the version of poi_id.py that you submit can be run on its own and
 ### generates the necessary .pkl files for validating your results.
 
-dump_classifier_and_data(clf, my_dataset, features_list)
+#dump_classifier_and_data(clf, my_dataset, features_list)
 

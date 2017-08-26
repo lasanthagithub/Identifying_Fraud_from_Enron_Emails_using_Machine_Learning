@@ -117,8 +117,8 @@ if True:
 		print('TRAVEL AGENCY IN THE PARK is not found')
 ## Therefore, TOTAL need to be removed	
 data_dict.pop('TOTAL', None)
-
-
+data_dict.pop('TRAVEL AGENCY IN THE PARK', None)
+data_dict.pop('LOCKHART EUGENE E', None)
 ## Please cnange False to True to see the boxplots, scatter plots and number of NaN values
 
 if False:
@@ -178,20 +178,87 @@ if True:
 		else:
 			data_dict[name]['std_from_poi_to_this_person'] = 'NaN'
 
+			
+			
+			
+			
+#############################################################################			
+## Following function(test_classifier) is aquired by tester.py, which was given
+## with final_project folder. Credit goes to the person who wrote the terster.py			
+			
+from sklearn.cross_validation import StratifiedShuffleSplit			
+def test_classifier(clf, dataset, feature_list, folds = 1000):
+    data = featureFormat(dataset, feature_list, sort_keys = True)
+    labels, features = targetFeatureSplit(data)
+    cv = StratifiedShuffleSplit(labels, folds, random_state = 42)
+    true_negatives = 0
+    false_negatives = 0
+    true_positives = 0
+    false_positives = 0
+    for train_idx, test_idx in cv: 
+        features_train = []
+        features_test  = []
+        labels_train   = []
+        labels_test    = []
+        for ii in train_idx:
+            features_train.append( features[ii] )
+            labels_train.append( labels[ii] )
+        for jj in test_idx:
+            features_test.append( features[jj] )
+            labels_test.append( labels[jj] )
+        
+        ### fit the classifier using training set, and test on test set
+        clf.fit(features_train, labels_train)
+        predictions = clf.predict(features_test)
+        for prediction, truth in zip(predictions, labels_test):
+            if prediction == 0 and truth == 0:
+                true_negatives += 1
+            elif prediction == 0 and truth == 1:
+                false_negatives += 1
+            elif prediction == 1 and truth == 0:
+                false_positives += 1
+            elif prediction == 1 and truth == 1:
+                true_positives += 1
+            else:
+                print ("Warning: Found a predicted label not == 0 or 1.")
+                print ("All predictions should take value 0 or 1.")
+                print ("Evaluating performance for processed predictions:")
+                break
+    try:
+        total_predictions = true_negatives + false_negatives + false_positives + true_positives
+        accuracy = 1.0*(true_positives + true_negatives)/total_predictions
+        precision = 1.0*true_positives/(true_positives+false_positives)
+        recall = 1.0*true_positives/(true_positives+false_negatives)
+        f1 = 2.0 * true_positives/(2*true_positives + false_positives+false_negatives)
+        f2 = (1+2.0*2.0) * precision*recall/(4*precision + recall)
+        print (clf)
+        print (PERF_FORMAT_STRING.format(accuracy, precision, recall, f1, f2, display_precision = 5))
+        print (RESULTS_FORMAT_STRING.format(total_predictions, true_positives, false_positives, false_negatives, true_negatives))
+        print ("")
+    except:
+        print ("Got a divide by zero when trying out:", clf)
+        print ("Precision or recall may be undefined due to a lack of true positive predicitons.")
+			
+#############################################################################			
+			
+		
 ### Store to my_dataset for easy export below.
 my_dataset = data_dict	
 		
-if False:			
+if True:			
 	## New feature list before finding relative importance	
 	features_list = ['poi', 'salary', 'total_payments', 'bonus',   
 			'deferred_income', 'expenses',  'shared_receipt_with_poi',
 			'std_from_this_person_to_poi', 'std_from_poi_to_this_person']
+			
+	features_list = ['poi','salary', 'total_payments', 'bonus',   
+		'deferred_income', 'expenses', 'to_messages', 'from_poi_to_this_person', 
+		'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi',
+		'std_from_this_person_to_poi', 'std_from_poi_to_this_person']
 
 	from sklearn import datasets, svm
 	from sklearn.cross_validation import train_test_split
 	from sklearn.feature_selection import SelectPercentile, f_classif
-
-
 
 	### Extract features and labels from dataset for local testing
 	data = featureFormat(my_dataset, features_list, sort_keys = True)
@@ -199,7 +266,7 @@ if False:
 
 	## Split into a training and testing set
 	features_train, features_test, labels_train, labels_test = \
-			train_test_split(features, labels, test_size=0.25, random_state=42)
+			train_test_split(features, labels, test_size=0.3, random_state=42)
 			
 	## Feature Scaling
 	from sklearn.preprocessing import StandardScaler
@@ -214,7 +281,8 @@ if False:
 	model = ExtraTreesClassifier()
 	model.fit(features_train, labels_train)
 	print(model.feature_importances_)
-
+	
+	## Trying other feature selection methods
 	'''
 	from sklearn.feature_selection import RFE
 	from sklearn.linear_model import LogisticRegression
@@ -227,9 +295,7 @@ if False:
 	index_lst = [i for i, itm in enumerate(fit.ranking_) if itm == 1]
 	print(index_lst)
 	print("Feature names: %s") % map(features_list[1: ].__getitem__, index_lst)
-	'''
 
-	'''
 	## Aplying PCA to feature extract
 	from sklearn.decomposition import PCA
 	pca = PCA(n_components = 4)
@@ -239,25 +305,58 @@ if False:
 	print(explained_variance)
 
 	#print(features_train)
-	selector = SelectPercentile(f_classif, percentile=10)
+	selector = SelectPercentile(f_classif, percentile=30)
 	selector.fit(features_train, labels_train)
 	print(selector.pvalues_)
-	'''
-	
-## Calculate precision and recall values with newly created features
-from sklearn.metrics import recall_score, precision_score
+	print(selector.scores_)	
+'''	
+## Final feature list
+features_list = ['poi', 'salary', 'total_payments', 'bonus', \
+	'deferred_income', 'expenses', 'std_from_this_person_to_poi']
 
-precision = precision_score(y_true, y_pred, average='micro')
-recall = recall_score(y_true, y_pred, average='micro')
+##  To verify the final selected features are the best selection, 
+## accuracy of the models was checked with different combination of 
+## features (manually selected) as as follows.
 
-'''
-## Final feature list	
+'''	
+features_list = ['poi', 'salary', 'total_payments', 'bonus',   
+		'deferred_income', 'expenses', 'std_from_this_person_to_poi', 
+		'std_from_poi_to_this_person']
+features_list = ['poi', 'salary', 'total_payments', 'bonus',   
+		'deferred_income', 'expenses',  
+		'std_from_poi_to_this_person']
+
 features_list = ['poi', 'salary', 'total_payments', 'bonus',   
 		'deferred_income', 'expenses', 'std_from_this_person_to_poi']
+features_list = ['poi', 'salary', 'total_payments', 'bonus',
+		'deferred_income', 'expenses']
 
+features_list = ['poi', 'bonus',   'std_from_poi_to_this_person', 
+		'deferred_income'		]
+features_list = ['poi', 'bonus',   'std_from_poi_to_this_person', ]
+
+features_list = ['poi', 'bonus',   'std_from_poi_to_this_person', 
+		'total_payments']
+
+features_list = ['poi', 'bonus',    'total_payments']
+features_list = ['poi', 'bonus',]
+
+features_list = ['poi', 'bonus', 'std_from_this_person_to_poi'  ]
+
+features_list = ['poi', 'bonus', 'std_from_this_person_to_poi',  'salary' ]
+
+features_list = ['poi', 'bonus', 'std_from_this_person_to_poi',  
+		'salary','std_from_poi_to_this_person']
+
+features_list = ['poi', 'bonus', 'std_from_this_person_to_poi',
+		'std_from_poi_to_this_person']
+
+features_list = ['poi','salary', 'total_payments', 'bonus',   
+		'deferred_income', 'expenses', 'to_messages', 'from_poi_to_this_person', 
+		'from_messages', 'from_this_person_to_poi', 'shared_receipt_with_poi']
+
+features_list = ['poi', 'bonus', 'std_from_this_person_to_poi']
 '''
-
-
 
 
 #############################################################################
@@ -274,8 +373,7 @@ labels, features = targetFeatureSplit(data)
 ## Split into a training and testing set
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
-		train_test_split(features, labels, test_size=0.3, random_state=42)
-		
+		train_test_split(features, labels, test_size=0.30, random_state=20)
 ## Feature Scaling
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
@@ -284,6 +382,8 @@ features_test = sc.transform(features_test)
 
 ## Making the Confusion Matrix to check the performance
 from sklearn.metrics import confusion_matrix, accuracy_score
+## import precision and recall methods
+from sklearn.metrics import recall_score, precision_score
 
 ## This function pront out the accuracy of the algorithms 
 def accuracy_check(classf, features_train, labels_train, method, labels_test,\
@@ -295,12 +395,17 @@ def accuracy_check(classf, features_train, labels_train, method, labels_test,\
 	labels_pred = classf.predict(features_test)
 	cm = confusion_matrix(labels_test, labels_pred, labels = [0,1])
 	acc = accuracy_score(labels_test, labels_pred)
+	
+	## Calculate precition and recall
+	precision = precision_score(labels_test, labels_pred, average='macro')
+	recall = recall_score(labels_test, labels_pred, average='macro')
 	print(method)
 	print('Change made:', change)
 	print('Confusion matrix')
 	print(cm)
 	print('Accuracy score', acc)
-
+	print('precision score', precision)
+	print('recall', recall)
 
 ## Checking diffrent algorithms
 if False:
@@ -338,10 +443,10 @@ if False:
 	accuracy_check(clf, features_train, labels_train, 'SVM',\
 				 labels_test, change = 'rbf, C = 1.0')	
 	print()
-	
+from sklearn.ensemble import RandomForestClassifier	
 if False:
 	## Random forest to the Training set
-	from sklearn.ensemble import RandomForestClassifier
+	
 	clf = RandomForestClassifier(n_estimators = 10, criterion = 'entropy')
 	accuracy_check(clf, features_train, labels_train, 'Random forest',\
 				 labels_test, change = 'Default values: n_estimators = 10')
@@ -352,6 +457,32 @@ if False:
 	accuracy_check(clf, features_train, labels_train, 'Random forest',\
 				 labels_test, change = 'n_estimators = 5')
 	print()
+	
+from sklearn.neighbors import KNeighborsClassifier	
+if True:
+
+	clf = KNeighborsClassifier(n_neighbors = 2)
+	accuracy_check(clf, features_train, labels_train, 'KNN',\
+				 labels_test, change = 'n_neighbors = 2')
+	test_classifier(clf, my_dataset, features_list, folds = 100)
+	clf = KNeighborsClassifier(n_neighbors = 4)				 
+	accuracy_check(clf, features_train, labels_train, 'KNN',\
+				 labels_test, change = 'n_neighbors = 4')
+	test_classifier(clf, my_dataset, features_list, folds = 100)
+	clf = KNeighborsClassifier(n_neighbors = 3)				 
+	accuracy_check(clf, features_train, labels_train, 'KNN',\
+				 labels_test, change = 'n_neighbors = 3')
+	test_classifier(clf, my_dataset, features_list, folds = 100)
+				 
+from sklearn.cross_validation import cross_val_score
+clf = KNeighborsClassifier(n_neighbors = 4)
+scores = cross_val_score(clf, features, labels, cv = 10, scoring = 'accuracy')
+#print(scores)
+
+
+
+
+
 
 
 #############################################################################
@@ -363,18 +494,28 @@ if False:
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
-
+'''
 from sklearn.cross_validation import train_test_split
 features_train, features_test, labels_train, labels_test = \
-    train_test_split(features, labels, test_size=0.3, random_state=42)
+    train_test_split(features, labels, test_size=0.4, random_state=42)
 
 print('Final analysis using Random forest algorithm.............')
+
 ## Random forest to the Training set
 from sklearn.ensemble import RandomForestClassifier
-clf = RandomForestClassifier(n_estimators = 10, criterion = 'entropy')
+
+clf = RandomForestClassifier(n_estimators = 20, criterion = 'entropy')
+#from sklearn.svm import SVC
+#clf = SVC(kernel = 'linear', C = 1.0)
+from sklearn.linear_model import LogisticRegression
+clf = LogisticRegression(C = 0.5)
 accuracy_check(clf, features_train, labels_train, 'Random forest',\
 				 labels_test, change = 'Default values: n_estimators = 10')
+'''
+from sklearn.neighbors import KNeighborsClassifier
+clf = KNeighborsClassifier(n_neighbors = 4)	
 
+clf.fit(features, labels)			 
 
 #############################################################################	
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can

@@ -246,9 +246,6 @@ if True:
 	print(selector.pvalues_)
 	print(selector.scores_)	
 '''	
-## Final feature list
-features_list = ['poi', 'salary', 'total_payments', 'bonus', \
-	'deferred_income', 'expenses', 'std_from_this_person_to_poi','std_from_poi_to_this_person']
 
 ##  To verify the final selected features are the best selection, 
 ## accuracy of the models was checked with different combination of 
@@ -293,7 +290,7 @@ features_list = ['poi','salary', 'total_payments', 'bonus',
 
 features_list = ['poi', 'bonus', 'std_from_this_person_to_poi']
 '''
-## final feature list
+## The final feature list
 features_list = ['poi', 'bonus', 'expenses']
 
 #############################################################################
